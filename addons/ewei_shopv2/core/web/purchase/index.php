@@ -37,23 +37,6 @@ class Index_EweiShopV2Page extends WebPage
 		if (empty($stock)) $this->message('请选择进货数量！', webUrl('purchase/add'));
 		if (empty($shop_id)) $this->message('未选择门店！', webUrl('purchase/add'));
 		$good_id = implode(',', $good_id);
-		$good_info = pdo_fetchall("SELECT * FROM " . tablename('ewei_shop_goods') . " WHERE id IN ($good_id)");
-		foreach ($good_info as &$val) {
-			foreach ($stock as $k => $v) {
-				if (!is_numeric($v)) $this->message('进货数量必须为数字！', webUrl('purchase/add'));
-				if ($k == $val['id'] && $stock[$val['id']] >= $val['total']) {
-					$this->message('进货数量不得大于总库存！', webUrl('purchase/add'));
-				}
-			}
-			$val['total'] = 0;
-			$val['good_id'] = $val['id'];
-			$val['shop_id'] = $shop_id;
-			$val['order_status'] = 0;
-			$val['number'] = $stock[$val['id']];
-			unset($val['id']);
-			$res = pdo_insert('ewei_shop_purchase', $val);
-		}
-		unset($good_info);
 		if (!$res) $this->message('进货失败', webUrl('purchase/add'));
 		$this->message('进货成功', webUrl('purchase'));
 	}
