@@ -34,11 +34,19 @@ class Index_EweiShopV2Page extends WebPage
 		$stock = $_POST['stock'];
 		$shop_id = intval($_POST['shop_id']);
 		if (empty($good_id)) $this->message('至少选择一件商品！', webUrl('purchase/add'));
-		if (empty($stock)) $this->message('请选择进货数量！', webUrl('purchase/add'));
+		if (empty($stock)) $this->message('请填写正确的进货数量！', webUrl('purchase/add'));
 		if (empty($shop_id)) $this->message('未选择门店！', webUrl('purchase/add'));
-		$good_id = implode(',', $good_id);
-		if (!$res) $this->message('进货失败', webUrl('purchase/add'));
-		$this->message('进货成功', webUrl('purchase'));
+		foreach ($stock as $k => $v) {
+			if (!is_numeric($v)) $this->message('请填写正确的进货数量', webUrl('purchase/add'));
+		}
+		dump($stock);
+		die;
+		$data = [];
+		foreach ($good_id as $v) {
+			$data[] = ['good_id' => $v, 'number' => $stock[$v]];
+		}
+//		if (!$res) $this->message('进货失败', webUrl('purchase/add'));
+//		$this->message('进货成功', webUrl('purchase'));
 	}
 
 	public function del()
