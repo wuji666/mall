@@ -36,9 +36,15 @@ class Index_EweiShopV2Page extends ComWebPage
             foreach ($uid as $k => $v) {
 				$uid2[$k]=$v['uid'];
             }
-            $uid = implode(',',$uid2);
-            $sql = 'SELECT * FROM ' . tablename('ewei_shop_store') . (' WHERE  uid in ' .'('. $uid . ')'.' and ' . $condition);
-        } else {
+            if (isset($uid2)){
+				$uid = implode(',',$uid2);
+			}else{
+            	$uid = 1;
+			}
+
+				$sql = 'SELECT * FROM ' . tablename('ewei_shop_store') . (' WHERE  uid in ' .'('. $uid . ')'.' and ' . $condition);
+
+		   } else {
             $sql = 'SELECT * FROM ' . tablename('ewei_shop_store') . (' WHERE ' . $condition . ' ORDER BY displayorder desc,id desc');
         }
 
