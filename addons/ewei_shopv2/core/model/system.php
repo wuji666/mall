@@ -1638,6 +1638,22 @@ class System_EweiShopV2Model
                 )
             );
         }
+        if ($_W['user']['jobid'] == 7) {
+            $shopmenu = array(
+                "order" => array(
+                    "title" => "订单",
+                    "subtitle" => "订单管理",
+                    "icon" => "order",
+                    "items" => array(
+                        array(
+                            "title" => "已完成",
+                            "route" => "list.status3",
+                            "desc" => "已完成订单管理"
+                        )
+                    )
+                )
+            );
+        }
         if (!p("app")) {
             unset($shopmenu["app"]);
         }

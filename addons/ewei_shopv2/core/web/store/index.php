@@ -179,6 +179,7 @@ class Index_EweiShopV2Page extends ComWebPage
 				$data['storegroupid'] = intval($_GPC['storegroupid']);
 			}
 			$data['uid'] = intval($_GPC['uid']);
+			$data['yid'] = intval($_GPC['yid']);
 			$data['order_printer'] = is_array($_GPC['order_printer']) ? implode(',', $_GPC['order_printer']) : '';
 			$data['order_template'] = intval($_GPC['order_template']);
 			$data['ordertype'] = is_array($_GPC['ordertype']) ? implode(',', $_GPC['ordertype']) : '';

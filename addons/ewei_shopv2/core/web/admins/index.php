@@ -43,10 +43,13 @@ class Index_EweiShopV2Page extends WebPage
             $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job') . 'WHERE id in (5,6)');
         } elseif ($_W['user']['jobid'] == 6) {
             $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job') . 'WHERE id = 7');
+            $guide = pdo_getall('ewei_shop_store',array('uid'=>$_W['user']['uid']));
         } else {
             $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job'));
-
         }
+
+
+
         include($this->template());
     }
 
