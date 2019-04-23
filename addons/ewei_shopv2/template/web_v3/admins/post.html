@@ -194,7 +194,7 @@
             return false;
         }
 
-        $.post("http://app.ahlzzn.com/web/index.php?c=site&a=entry&m=ewei_shopv2&do=web&r=admins.doadd", {
+        $.post("{php echo webUrl('admins/index/doadd')}", {
             uid: uid,
             username: username,
             password: password,
