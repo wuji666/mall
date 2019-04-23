@@ -46,6 +46,7 @@ class Index_EweiShopV2Page extends WebPage
 		foreach ($data as $v) {
 			$res = pdo_insert('ewei_shop_purchase_order', $v);
 		}
+		
 		if (!$res) $this->message('进货失败', webUrl('purchase/add'));
 		$this->message('进货成功', webUrl('purchase'));
 	}
