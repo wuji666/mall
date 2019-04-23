@@ -838,7 +838,6 @@ class List_EweiShopV2Page extends WebPage
         $orderData = $this->orderData(5, 'status5');
     }
 
-<<<<<<< HEAD
 	private function order_list($role_id, $shop_id = [])
 	{
 		if ($role_id == 0 && $role_id == 3 && $role_id == 4) {
@@ -948,60 +947,6 @@ class List_EweiShopV2Page extends WebPage
 			}
 		}
 	}
-=======
-    public function purchase()
-    {
-        global $_W;
-        $admin = pdo_get('users', ['uid' => $_W['uid']]);
-        $store = pdo_getall('ewei_shop_store', ['uid' => $_W['uid']]);
-        $store_list = [];
-        $shop_id = [];
-        foreach ($store as $v) {
-            $store_list[$v['id']] = $v['storename'];
-            $shop_id[] = $v['id'];
-        }
-        $list = pdo_getall('ewei_shop_purchase', [
-            'order_status' => 0,
-            'shop_id in' => $shop_id
-        ]);
-        $total = count($list);
-        $sum_money = null;
-        foreach ($list as $v) {
-            $sum_money += $v['number'] * $v['marketprice'];
-        }
-
-        include $this->template('order/purchase');
-    }
-
-    public function updatePurchase()
-    {
-        global $_GPC;
-        $id = $_GPC['id'];
-        $shop_id = $_GPC['shop_id'];
-        $good_id = $_GPC['good_id'];
-        $stock = $_GPC['stock'];
-        $info = pdo_get('ewei_shop_purchase', [
-            'shop_id' => $shop_id,
-            'good_id' => $good_id,
-            'order_status' => 1
-        ]);
-        if ($info === false) {
-            $res = pdo_update('ewei_shop_purchase',
-                ['total' => $stock, 'order_status' => 1, 'number' => 0],
-                ['id' => $id]
-            );
-            if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
-            exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
-        }
-        $res = pdo_update('ewei_shop_purchase',
-            ['total' => $info['total'] + $stock, 'number' => 0],
-            ['id' => $info['id']]
-        );
-        pdo_delete('ewei_shop_purchase', ['id' => $id]);
-        if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
-        exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
-    }
->>>>>>> 004109805536f1078b7de87f4b3a7a6eae1d13e5
 
     public function status_1()
     {
