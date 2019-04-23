@@ -962,8 +962,8 @@ class List_EweiShopV2Page extends WebPage
 					['order_status' => 2],
 					['id' => $order_id]
 				);
-				if (!$res || !$update_user || !$record_integral) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
-				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
+				if (!$res || !$update_user || !$record_integral) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
+				exit(json_encode(['status' => 1, 'msg' => '确认发货成功']));
 			}
 		}
 	}
