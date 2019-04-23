@@ -375,7 +375,15 @@
 				    </p></div>
 				<div class="fui-cell-remark"></div>
 			</a>
+			<a class="fui-cell" href="<?php  echo mobileUrl('member/credits')?>">
+				<div class="fui-cell-icon"><i class="icon icon-xiaofei"></i></div>
+				<div class="fui-cell-text"><p>
+					积分记录
+				</p></div>
+				<div class="fui-cell-remark"></div>
+			</a>
 		</div>
+
 		<div class="fui-cell-group fui-cell-click">
 			<a class="fui-cell" href="<?php  echo mobileUrl('member/address')?>">
 				<div class="fui-cell-icon"><i class="icon icon-dingwei1"></i></div>
