@@ -811,57 +811,114 @@ class List_EweiShopV2Page extends WebPage
 		$orderData = $this->orderData(5, 'status5');
 	}
 
+	private function order_list($role_id, $shop_id = [])
+	{
+		if ($role_id == 0 && $role_id == 3 && $role_id == 4) {
+			$order = pdo_getall('ewei_shop_purchase_order');
+		} else {
+			$order = pdo_getall('ewei_shop_purchase_order', ['shop_id in' => $shop_id]);
+		}
+		$good_id = [];
+		foreach ($order as $val) {
+			$good_id[] = $val['good_id'];
+		}
+		$list = pdo_getall('ewei_shop_goods', ['id in' => $good_id]);
+		$sum_money = null;
+		foreach ($list as &$v) {
+			$sum_money += $v['number'] * $v['marketprice'];
+			foreach ($order as $val) {
+				if ($v['id'] == $val['good_id']) {
+					$v['order_status'] = $val['order_status'];
+					$v['number'] = $val['number'];
+					$v['shop_id'] = $val['shop_id'];
+					$v['order_id'] = $val['id'];
+				}
+			}
+		}
+		return ['list' => $list, 'sum_money' => $sum_money, 'total' => count($list)];
+	}
+
 	public function purchase()
 	{
 		global $_W;
-		$admin = pdo_get('users', ['uid' => $_W['uid']]);
-		$store = pdo_getall('ewei_shop_store', ['uid' => $_W['uid']]);
+		$role_id = $_W['user']['jobid'];
+		if ($role_id != 0 && $role_id != 3 && $role_id != 4) {
+			if ($role_id == 2) {
+				$admin_arr = pdo_getall('users', ['fid' => $_W['uid']], 'uid');
+				$uid = [];
+				foreach ($admin_arr as $v) {
+					$uid[] = $v['uid'];
+				}
+				$store = pdo_getall('ewei_shop_store', ['uid in' => $uid]);
+			} else {
+				$store = pdo_getall('ewei_shop_store', ['uid' => $_W['uid']]);
+			}
+		} else {
+			$store = pdo_getall('ewei_shop_store');
+		}
 		$store_list = [];
 		$shop_id = [];
 		foreach ($store as $v) {
 			$store_list[$v['id']] = $v['storename'];
 			$shop_id[] = $v['id'];
 		}
-		$list = pdo_getall('ewei_shop_purchase', [
-			'order_status' => 0,
-			'shop_id in'   => $shop_id
-		]);
-		$total = count($list);
-		$sum_money = null;
-		foreach ($list as $v) {
-			$sum_money += $v['number'] * $v['marketprice'];
-		}
-
+		$list = $this->order_list($role_id, $shop_id);
+		$list = $list['list'];
+		$total = $list['total'];
+		$sum_money = $list['sum_money'];
 		include $this->template('order/purchase');
 	}
 
 	public function updatePurchase()
 	{
 		global $_GPC;
-		$id = $_GPC['id'];
+		global $_W;
+		$role_id = $_W['user']['jobid'];
+		// 订单主键
+		$order_id = $_GPC['order_id'];
+		// 商店id
 		$shop_id = $_GPC['shop_id'];
+		// 商品id
 		$good_id = $_GPC['good_id'];
-		$stock = $_GPC['stock'];
-		$info = pdo_get('ewei_shop_purchase', [
-			'shop_id'      => $shop_id,
-			'good_id'      => $good_id,
-			'order_status' => 1
-		]);
-		if ($info === false) {
-			$res = pdo_update('ewei_shop_purchase',
-				['total' => $stock, 'order_status' => 1, 'number' => 0],
-				['id' => $id]
+		// 进货数量
+		$number = $_GPC['number'];
+		if (empty($order_id) || empty($shop_id) || empty($good_id) || empty($number)){
+			exit(json_encode(['status' => 0, 'msg' => '操作异常!!!']));
+		}
+		if ($role_id == 3) {
+			$res = pdo_update('ewei_shop_purchase_order',
+				['order_status' => 1],
+				['id' => $order_id]
 			);
 			if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
 			exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
 		}
-		$res = pdo_update('ewei_shop_purchase',
-			['total' => $info['total'] + $stock, 'number' => 0],
-			['id' => $info['id']]
-		);
-		pdo_delete('ewei_shop_purchase', ['id' => $id]);
-		if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
-		exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
+		if ($role_id == 4) {
+			$res = pdo_update('ewei_shop_purchase_order',
+				['order_status' => 2],
+				['id' => $order_id]
+			);
+			if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
+			exit(json_encode(['status' => 1, 'msg' => '确认发货成功']));
+		}
+		if ($role_id == 0) {
+			$order_status = pdo_get('ewei_shop_purchase_order', ['id' => $order_id], 'order_status');
+			if ($order_status['order_status'] == 0) {
+				$res = pdo_update('ewei_shop_purchase_order',
+					['order_status' => 1],
+					['id' => $order_id]
+				);
+				if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
+				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
+			} else if ($order_status['order_status'] == 1) {
+				$res = pdo_update('ewei_shop_purchase_order',
+					['order_status' => 2],
+					['id' => $order_id]
+				);
+				if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
+				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
+			}
+		}
 	}
 
 	public function status_1()
