@@ -914,7 +914,10 @@ class List_EweiShopV2Page extends WebPage
 		if (empty($order_id) || empty($shop_id) || empty($good_id) || empty($number)){
 			exit(json_encode(['status' => 0, 'msg' => '操作异常!!!']));
 		}
+		$good = pdo_getcolumn('ewei_shop_goods', ['id' => $good_id], 'proportion');
 		$store = pdo_get('ewei_shop_store', ['id' => $shop_id], 'uid');
+		$user_integral = pdo_getcolumn('users', ['uid' => $store['uid']], 'integral');
+		$integral = (number_format($money) * -100) * ($good / 100);
 		if ($role_id == 3) {
 			$res = pdo_update('ewei_shop_purchase_order',
 				['order_status' => 1],
@@ -924,12 +927,18 @@ class List_EweiShopV2Page extends WebPage
 			exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
 		}
 		if ($role_id == 4) {
-			$update_user = pdo_update('users', ['integral' => number_format($money) * -100], ['uid' => $store['uid']]);
+			$record_integral = pdo_insert('ewei_users_integral', [
+				'integralnum' => $integral,
+				'type'        => 1,
+				'mid'         => $store['uid'],
+				'usetime'     => time()
+			]);
+			$update_user = pdo_update('users', ['integral' => $user_integral + $integral], ['uid' => $store['uid']]);
 			$res = pdo_update('ewei_shop_purchase_order',
 				['order_status' => 2],
 				['id' => $order_id]
 			);
-			if (!$res || !$update_user) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
+			if (!$res || !$update_user || !$record_integral) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
 			exit(json_encode(['status' => 1, 'msg' => '确认发货成功']));
 		}
 		if ($role_id == 0) {
@@ -942,12 +951,18 @@ class List_EweiShopV2Page extends WebPage
 				if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
 				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
 			} else if ($order_status['order_status'] == 1) {
-				$update_user = pdo_update('users', ['integral' => number_format($money) * -100], ['uid' => $store['uid']]);
+				$record_integral = pdo_insert('ewei_users_integral', [
+					'integralnum' => $integral,
+					'type'        => 1,
+					'mid'         => $store['uid'],
+					'usetime'     => time()
+				]);
+				$update_user = pdo_update('users', ['integral' => $user_integral + $integral], ['uid' => $store['uid']]);
 				$res = pdo_update('ewei_shop_purchase_order',
 					['order_status' => 2],
 					['id' => $order_id]
 				);
-				if (!$res || !$update_user) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
+				if (!$res || !$update_user || !$record_integral) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
 				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
 			}
 		}
