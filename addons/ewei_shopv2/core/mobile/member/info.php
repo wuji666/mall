@@ -51,6 +51,7 @@ class Info_EweiShopV2Page extends MobileLoginPage
 		$wapset = m('common')->getSysset('wap');
 		$area_set = m('util')->get_area_config_set();
 		$new_area = intval($area_set['new_area']);
+		$shopid = $member['shopid'];
 		$show_data = 1;
 		if (!empty($new_area) && empty($member['datavalue']) || empty($new_area) && !empty($member['datavalue'])) {
 			$show_data = 0;

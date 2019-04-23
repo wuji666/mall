@@ -102,6 +102,19 @@
 		</div>
 		<?php  } ?>
 
+
+		<div class="fui-cell-group">
+			<div class="fui-cell must">
+				<div class="fui-cell-label">店铺ID</div>
+				<div class="fui-cell-info c000"><?php  if(empty($shopid)) { ?>未绑定店铺ID<?php  } else { ?><?php  echo $shopid;?><?php  } ?><?php  if(!empty($shopid)) { ?>(已绑定)<?php  } ?></div>
+				<?php  if(!empty($shopid)) { ?>
+				<input type="hidden" name="mobile" id="mobile" value="<?php  echo $member['mobile'];?>"/>
+				<?php  } ?>
+				<a class="fui-cell-remark external" href="<?php  echo mobileUrl('member/shop')?>"><?php  if(empty($shopid)) { ?>绑定<?php  } else { ?>更换绑定<?php  } ?></a>
+			</div>
+		</div>
+
+
 		<?php  if(empty($template_flag)) { ?>
 			 
 		<div class="fui-cell-group">

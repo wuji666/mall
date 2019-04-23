@@ -442,7 +442,7 @@
         $('.valid').click(function () {
             var data_checked = $('.valid').attr('data-checked');
             if (data_checked == 'false') {
-                $.post("http://app.ahlzzn.com/app/index.php?i=2&c=entry&m=ewei_shopv2&do=mobile&r=order.create.integralcalculation", {
+                $.post("<?php  echo mobileUrl('order/create/integralcalculation')?>", {
                     "total":<?php  echo $total;?>,
                     "createInfo":<?php  echo json_encode($createInfo)?>
                 }, function (res) {
@@ -455,7 +455,7 @@
                     }
                 },'json')
             }else{
-                $.post("http://app.ahlzzn.com/app/index.php?i=2&c=entry&m=ewei_shopv2&do=mobile&r=order.create.cancel", {
+                $.post("<?php  echo mobileUrl('order/create/cancel')?>", {
                     "total":<?php  echo $total;?>,
                     "createInfo":<?php  echo json_encode($createInfo)?>
                 }, function (res) {
@@ -641,7 +641,7 @@
 </div>
 <script>
     $('.butt').click(function () {
-        $.post("http://app.ahlzzn.com/app/index.php?i=2&c=entry&m=ewei_shopv2&do=mobile&r=order.create.buy", {
+        $.post("<?php  echo mobileUrl('order/create/buy')?>", {
             "total":<?php  echo $total;?>,
             "createInfo":<?php  echo json_encode($createInfo)?>
         }, function (res) {

@@ -136,6 +136,18 @@
                                 </select>
                         </div>
                     </div>
+                        {if $_W['user']['jobid'] == 6}
+                        <div class="form-group dispatch_info">
+                        <label class="col-sm-2 control-label">所在店铺</label>
+                            <div class="col-sm-5">
+                                <select class="form-control tpl-category-parent select2" id="shopid" name="shopid"  data-rule-required="true" >
+                                    {loop $guide $row}
+                                    <option value="{$row['id']}" >{$row['storename']}</option>
+                                    {/loop}
+                                </select>
+                        </div>
+                    </div>
+                        {/if}
                 </div>
 </div>
 </div>
@@ -173,6 +185,7 @@
         var truename = $('#truename').val();
         var myreg = /^[1][3,4,5,7,8][0-9]{9}$/;
         var jobid = $("#job option:selected").val();
+        var shopid = $("#shopid option:selected").val();
         if (username == '') {
            tip.msgbox.err('请填写管理员账号!');
             return false;
@@ -200,7 +213,8 @@
             password: password,
             phone:phone,
             truename:truename,
-            jobid:jobid
+            jobid:jobid,
+            shopid:shopid
         }, function (res) {
             if (res.code == 0) {
                 tip.msgbox.err(res.msg);

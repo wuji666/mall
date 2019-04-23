@@ -182,7 +182,7 @@ class Op_EweiShopV2Page extends WebPage
 		else 
 		{
 			$time = time();
-			$updateorder = array('status' => 1, 'paytype' => 11, 'paytime' => $time);
+			$updateorder = array('status' => 1, 'paytype' => 11, 'paytime' => $time,'guideid'=>$_GPC['guide']);
 			$isonlyverifygoods = m('order')->checkisonlyverifygoods($item['id']);
 			if ($isonlyverifygoods) 
 			{

@@ -102,6 +102,19 @@
 		</div>
 		{/if}
 
+
+		<div class="fui-cell-group">
+			<div class="fui-cell must">
+				<div class="fui-cell-label">店铺ID</div>
+				<div class="fui-cell-info c000">{if empty($shopid)}未绑定店铺ID{else}{$shopid}{/if}{if !empty($shopid)}(已绑定){/if}</div>
+				{if !empty($shopid)}
+				<input type="hidden" name="mobile" id="mobile" value="{$member['mobile']}"/>
+				{/if}
+				<a class="fui-cell-remark external" href="{php echo mobileUrl('member/shop')}">{if empty($shopid)}绑定{else}更换绑定{/if}</a>
+			</div>
+		</div>
+
+
 		{if empty($template_flag)}
 			 
 		<div class="fui-cell-group">
