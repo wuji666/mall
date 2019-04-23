@@ -862,7 +862,7 @@ class List_EweiShopV2Page extends WebPage
 				}
 			}
 		}
-		array_multisort(array_column($list,'order_status'),SORT_DESC,$list);
+		array_multisort(array_column($list, 'order_status'), SORT_DESC, $list);
 		return ['list' => $list, 'sum_money' => $sum_money, 'total' => count($list)];
 	}
 
