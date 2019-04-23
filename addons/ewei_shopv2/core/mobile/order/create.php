@@ -2590,9 +2590,32 @@ class Create_EweiShopV2Page extends MobileLoginPage
         $integral = ($order['goodsprice'] - $order['price']) * 100;
         $credit1 = $member['credit1'] - $integral;
         if ($integral > 0) {
-            pdo_update("ewei_shop_member", array("credit1" => $credit1), array("id" => $_W['ewei_shopv2_member']['id'], "uniacid" => 2));
-        }
+            // 通过用户绑定的id找到店长
+            $user = pdo_get('ewei_shop_store',array('id'=>$_W['ewei_shopv2_member']['shopid'], "uniacid" => 2),array('uid'));
+            // 根据店长id 来找 店长积分
+            $userintegral = pdo_get('users',array('uid'=>$user['uid']),array('integral'));
+            $integral2 = $userintegral['integral']+$integral;
 
+            $a = pdo_update("users", array("integral" => $integral2), array("uid" => $user['uid']));
+            pdo_update("ewei_shop_member", array("credit1" => $credit1), array("id" => $_W['ewei_shopv2_member']['id'], "uniacid" => 2));
+            $member_integral['type'] = 0;
+            $member_integral['integralnum'] = $integral;
+            $member_integral['usetime'] = time();
+            $member_integral['mid'] = $_W['ewei_shopv2_member']['id'];
+            $a = pdo_insert('ewei_member_integral',$member_integral);
+            $userintegral2 = pdo_get('users',array('uid'=>$user['uid']),array('integral'));
+
+            if ($userintegral['integral']>$userintegral2){
+                $type = 0;
+            }else{
+                $type = 1;
+            }
+            $user_integral['type'] = $type;
+            $user_integral['integralnum'] =$integral;
+            $user_integral['usetime'] =time();
+            $user_integral['mid'] =$user['uid'];
+            $a = pdo_insert("ewei_users_integral", $user_integral);
+        }
         if (!(empty($goods[0]['bargain_id'])) && p('bargain')) {
             pdo_update('ewei_shop_bargain_actor', array('order' => $orderid), array('id' => $goods[0]['bargain_id'], 'openid' => $_W['openid']));
         }
@@ -2973,6 +2996,7 @@ class Create_EweiShopV2Page extends MobileLoginPage
         } else {
             $ordersn = m('common')->createNO('order', 'ordersn', 'SH');
         }
+
         $address = pdo_fetch('select * from ' . tablename('ewei_shop_member_address') . ' where openid=:openid and deleted=0 and isdefault=1  and uniacid=:uniacid limit 1', array(':uniacid' => $_W['uniacid'], ':openid' => $_W['openid']));
 
         $order['uniacid'] = $_W['uniacid'];
@@ -3004,7 +3028,22 @@ class Create_EweiShopV2Page extends MobileLoginPage
         $res2 = pdo_insert('ewei_shop_order_goods', $order_goods);
 
         if ($res && $res2) {
+            $user = pdo_get('ewei_shop_store',array('id'=>$_W['ewei_shopv2_member']['shopid'], "uniacid" => 2),array('uid'));
+            $user2 = pdo_get('users',array('uid'=>$user['uid']));
+            $integral2 = $user2['integral']+$goods['integral'];
+            $res3 = pdo_update("users", array("integral" => $integral2), array("uid" =>$user['uid'] ));
+
+            $user_integral['integralnum'] = $goods['integral'];
+            $user_integral['type'] = 1;
+            $user_integral['mid'] = $user['uid'] ;
+            $user_integral['usetime'] = time();
+            $a = pdo_insert('ewei_users_integral',$user_integral);
             $integral = ($member['credit1'] - $goods['integral']);
+            $member_integral['type'] = 0;
+            $member_integral['mid'] = $_W['ewei_shopv2_member']['id'];
+            $member_integral['usetime'] = time();
+            $member_integral['integralnum'] = $goods['integral'];
+            $a = pdo_insert('ewei_member_integral',$member_integral);
             $res3 = pdo_update("ewei_shop_member", array("credit1" => $integral), array("id" => $_W['mid'], "uniacid" => $_W['uniacid']));
             if ($res3) {
                 exit(json_encode(array('code' => 0, 'msg' => '购买成功！')));

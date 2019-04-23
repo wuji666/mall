@@ -440,10 +440,11 @@
     </div>
     <script>
         $('.valid').click(function () {
+
             var data_checked = $('.valid').attr('data-checked');
             if (data_checked == 'false') {
                 $.post("{php echo mobileUrl('order/create/integralcalculation')}", {
-                    "total":{$total},
+                    "total":$('#goodscount').text(),
                     "createInfo":{php echo json_encode($createInfo)}
                 }, function (res) {
                           if (res.code == 0) {
