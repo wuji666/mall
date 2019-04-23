@@ -14,6 +14,9 @@ class Shop_EweiShopV2Page extends MobileLoginPage
         include $this->template();
     }
 
+    /**
+     * 用户绑定店铺 iD
+     */
     public function bound()
     {
         global $_W;
@@ -28,11 +31,15 @@ class Shop_EweiShopV2Page extends MobileLoginPage
             show_json(0, '验证码错误或已过期');
         }
         if (empty($shopid)) {
-            exit(json_encode(array('code' => 1, 'msg' => '门店ID不能为空')));
+            show_json(0, '店铺ID不能为空');
         }
         unset($data['mobile']);
         unset($data['verifycode']);
         $a = pdo_update('ewei_shop_member', $data, array('id' => $_W['ewei_shopv2_member']['id'], 'uniacid' => $_W['uniacid']));
-
+        if ($a){
+            show_json(1, '店铺ID绑定成功');
+        }else{
+            show_json(0, '请检查门店ID是否已经绑定');
+        }
     }
 }

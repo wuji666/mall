@@ -772,14 +772,14 @@ class System_EweiShopV2Model
                             "desc" => "全部订单列表",
                             "permmust" => "order.list.main"
                         ),
-                      
-                            array(
-                                "title" => "内购订单",
-                                "route" => "list.purchase",
-                                "desc" => "内购订单列表",
-                            )
-                        ,
-                       array(
+
+                        array(
+                            "title" => "内购订单",
+                            "route" => "list.purchase",
+                            "desc" => "内购订单列表",
+                        )
+                    ,
+                        array(
                             "title" => "维权",
                             "route" => "list",
                             "items" => array(
@@ -1382,7 +1382,29 @@ class System_EweiShopV2Model
                             )
                         )
                     )
-                )
+                ),
+                "store" => array(
+                    "title" => "门店",
+                    "subtitle" => "门店",
+                    "icon" => "mendianguanli",
+                    "items" => array(
+                        array(
+                            "title" => "门店管理",
+                            "items" => array(
+                                array(
+                                    "title" => "门店管理",
+                                    "route" => "",
+                                    "extends" => array(
+                                        "store.diypage.settings",
+                                        "store.diypage.page",
+                                        "store.goods",
+                                        "store.goods.goodsoption"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
             );
         }
         // 仓管
@@ -1403,7 +1425,7 @@ class System_EweiShopV2Model
             );
         }
         // 营养师
-       if ($_W['user']['jobid'] == 5) {
+        if ($_W['user']['jobid'] == 5) {
             $shopmenu = array(
                 "order" => array(
                     "title" => "订单",
@@ -1582,6 +1604,10 @@ class System_EweiShopV2Model
                                     )
                                 ),
                                 array(
+                                    "title" => "门店积分",
+                                    "route" => "integral"
+                                ),
+                                array(
                                     "title" => "入口",
                                     "route" => "entrance"
                                 )
@@ -1638,6 +1664,7 @@ class System_EweiShopV2Model
                 )
             );
         }
+        // 导购
         if ($_W['user']['jobid'] == 7) {
             $shopmenu = array(
                 "order" => array(
