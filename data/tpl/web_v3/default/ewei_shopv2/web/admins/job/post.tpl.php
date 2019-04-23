@@ -154,7 +154,7 @@
         <div class="col-sm-9 subtitle">
             <input type="submit" value="保存信息" class="btn btn-primary"/>
             <a class="btn btn-default"
-               href="<?php  echo webUrl('goods',array('goodsfrom'=>$_GPC['goodsfrom'], 'page'=>$_GPC['page']))?>">返回列表</a>
+               href="<?php  echo webUrl('admins/job')?>">返回列表</a>
         </div>
     </div>
     </form>
@@ -183,7 +183,7 @@
             tip.msgbox.err('请填写权限名称!');
             return false;
         }
-        $.post("http://app.ahlzzn.com/web/index.php?c=site&a=entry&m=ewei_shopv2&do=web&r=admins.job.post", {
+        $.post("<?php  echo webUrl('admins/job/post')?>", {
             jobtitle: jobtitle,
             jobdesc: jobdesc
         }, function (res) {

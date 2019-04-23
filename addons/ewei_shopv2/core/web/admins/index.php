@@ -10,10 +10,11 @@ class Index_EweiShopV2Page extends WebPage
         global $_W;
         global $_GPC;
         if ($_W['user']['jobid'] == 2) {
-            $admins = pdo_fetchall('SELECT uid,username,jobid,truename FROM ' . tablename('users') . 'WHERE jobid in (5,6) and fid =:fid',array(':fid'=>$_W['user']['uid']));
+            $admins = pdo_fetchall('SELECT uid,username,jobid,truename FROM ' . tablename('users') . 'WHERE jobid in (5,6) and fid =:fid', array(':fid' => $_W['user']['uid']));
+        } elseif ($_W['user']['jobid'] == 6) {
+            $admins = pdo_fetchall('SELECT uid,username,jobid,truename FROM ' . tablename('users') . 'WHERE jobid = 7 and fid =:fid', array(':fid' => $_W['user']['uid']));
         } else {
             $admins = pdo_fetchall('SELECT uid,username,jobid,truename FROM ' . tablename('users'));
-
         }
         $admins_list = [];
         foreach ($admins as $k => $v) {
@@ -38,21 +39,24 @@ class Index_EweiShopV2Page extends WebPage
         global $_GPC;
         $uid = intval($_GPC['uid']);
         $item = pdo_fetch('SELECT * FROM ' . tablename('users') . (' WHERE uid = \'' . $uid . '\' limit 1'));
-   if ($_W['user']['jobid'] == 2){
-            $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job').'WHERE id in (5,6)');
-        }else{
+        if ($_W['user']['jobid'] == 2) {
+            $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job') . 'WHERE id in (5,6)');
+        } elseif ($_W['user']['jobid'] == 6) {
+            $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job') . 'WHERE id = 7');
+        } else {
             $category = pdo_fetchall('SELECT * FROM ' . tablename('ewei_shopv2_job'));
+
         }
         include($this->template());
     }
 
     public function doadd()
     {
-     	 global $_W;
+        global $_W;
         global $_GPC;
         $data = $_POST;
         @$uid = $data['uid'];
-        if ($uid==null){
+        if ($uid == null) {
             if ($data['username'] == '' || $data['password'] == '') {
                 exit(json_encode(array('code' => 1, 'msg' => '管理员名称或密码不能为空！')));
             }
@@ -77,7 +81,7 @@ class Index_EweiShopV2Page extends WebPage
         $data['joinip'] = $_SERVER['SERVER_ADDR'];
         $data['salt'] = $this->str_rand();
         $data['password'] = user_hash($data['password'], $data['salt']);
-        $res = pdo_update('users', $data,array('uid'=>$uid));
+        $res = pdo_update('users', $data, array('uid' => $uid));
         if ($res) {
             exit(json_encode(array('code' => 0, 'msg' => '管理员添加成功！')));
         }

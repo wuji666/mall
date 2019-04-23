@@ -831,10 +831,6 @@ class System_EweiShopV2Model
                                     )
                                 ),
                                 array(
-                                    "title" => "店员管理",
-                                    "route" => "saler"
-                                ),
-                                array(
                                     "title" => "关键词设置",
                                     "route" => "set"
                                 )
@@ -1578,10 +1574,6 @@ class System_EweiShopV2Model
                                         "store.goods",
                                         "store.goods.goodsoption"
                                     )
-                                ),
-                                array(
-                                    "title" => "店员管理",
-                                    "route" => "saler"
                                 ),
                                 array(
                                     "title" => "入口",
