@@ -849,7 +849,7 @@ class List_EweiShopV2Page extends WebPage
 		foreach ($order as $val) {
 			$good_id[] = $val['good_id'];
 		}
-		$list = pdo_getall('ewei_shop_goods', ['id in' => $good_id]);
+		$list = pdo_fetchall("SELECT * FROM `ims_ewei_shop_purchase_order` `a` LEFT JOIN `ims_ewei_shop_goods` `b` ON `a`.`good_id`=`b`.`id` ORDER BY `a`.`order_status` ASC");
 		$sum_money = null;
 		foreach ($list as &$v) {
 			$sum_money += $v['number'] * $v['marketprice'];
@@ -862,6 +862,7 @@ class List_EweiShopV2Page extends WebPage
 				}
 			}
 		}
+		array_multisort(array_column($list,'order_status'),SORT_DESC,$list);
 		return ['list' => $list, 'sum_money' => $sum_money, 'total' => count($list)];
 	}
 
@@ -914,7 +915,20 @@ class List_EweiShopV2Page extends WebPage
 		if (empty($order_id) || empty($shop_id) || empty($good_id) || empty($number)){
 			exit(json_encode(['status' => 0, 'msg' => '操作异常!!!']));
 		}
+		// 商品
+		$good = pdo_get('ewei_shop_goods', ['id' => $good_id]);
+		// 店长id
 		$store = pdo_get('ewei_shop_store', ['id' => $shop_id], 'uid');
+		// 用户积分
+		$user_integral = pdo_getcolumn('users', ['uid' => $store['uid']], 'integral');
+		// 当前获得积分
+		$integral = (number_format($money) * -100) * ($good['proportion'] / 100);
+		// 当前商品是否存在
+		$purchase = pdo_get('ewei_shop_purchase', ['shop_id' => $shop_id, 'good_id' => $good_id]);
+		$good['shop_id'] = $shop_id;
+		$good['good_id'] = $good_id;
+		$good['total'] = $number;
+		unset($good['id']);
 		if ($role_id == 3) {
 			$res = pdo_update('ewei_shop_purchase_order',
 				['order_status' => 1],
@@ -924,12 +938,25 @@ class List_EweiShopV2Page extends WebPage
 			exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
 		}
 		if ($role_id == 4) {
-			$update_user = pdo_update('users', ['integral' => number_format($money) * -100], ['uid' => $store['uid']]);
+			$record_integral = pdo_insert('ewei_users_integral', [
+				'integralnum' => $integral,
+				'type'        => 1,
+				'mid'         => $store['uid'],
+				'usetime'     => time()
+			]);
+			$update_user = pdo_update('users', ['integral' => $user_integral + $integral], ['uid' => $store['uid']]);
 			$res = pdo_update('ewei_shop_purchase_order',
 				['order_status' => 2],
 				['id' => $order_id]
 			);
-			if (!$res || !$update_user) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
+			if (!$purchase) {
+				$purchase_res = pdo_insert('ewei_shop_purchase', $good);
+			} else {
+				$purchase_res = pdo_update('ewei_shop_purchase', [
+					'total' => $purchase['total'] + $number
+				], ['id' => $purchase['id']]);
+			}
+			if (!$res || !$update_user || !$record_integral || !$purchase_res) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
 			exit(json_encode(['status' => 1, 'msg' => '确认发货成功']));
 		}
 		if ($role_id == 0) {
@@ -942,13 +969,26 @@ class List_EweiShopV2Page extends WebPage
 				if (!$res) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
 				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
 			} else if ($order_status['order_status'] == 1) {
-				$update_user = pdo_update('users', ['integral' => number_format($money) * -100], ['uid' => $store['uid']]);
+				$record_integral = pdo_insert('ewei_users_integral', [
+					'integralnum' => $integral,
+					'type'        => 1,
+					'mid'         => $store['uid'],
+					'usetime'     => time()
+				]);
+				$update_user = pdo_update('users', ['integral' => $user_integral + $integral], ['uid' => $store['uid']]);
 				$res = pdo_update('ewei_shop_purchase_order',
 					['order_status' => 2],
 					['id' => $order_id]
 				);
-				if (!$res || !$update_user) exit(json_encode(['status' => 0, 'msg' => '确认收款失败']));
-				exit(json_encode(['status' => 1, 'msg' => '确认收款成功']));
+				if (!$purchase) {
+					$purchase_res = pdo_insert('ewei_shop_purchase', $good);
+				} else {
+					$purchase_res = pdo_update('ewei_shop_purchase', [
+						'total' => $purchase['total'] + $number
+					], ['id' => $purchase['id']]);
+				}
+				if (!$res || !$update_user || !$record_integral || !$purchase_res) exit(json_encode(['status' => 0, 'msg' => '确认发货失败']));
+				exit(json_encode(['status' => 1, 'msg' => '确认发货成功']));
 			}
 		}
 	}

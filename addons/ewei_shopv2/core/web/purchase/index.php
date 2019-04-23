@@ -8,6 +8,8 @@ class Index_EweiShopV2Page extends WebPage
 	public function main()
 	{
 		global $_W;
+		$role_id = $_W['user']['jobid'];
+		if ($role_id != 6) $this->message('当前角色没有权限');
 		$store = pdo_getall('ewei_shop_store', ['uid' => $_W['uid']]);
 		$shop_id = [];
 		foreach ($store as $v) {
