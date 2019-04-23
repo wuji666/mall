@@ -39,14 +39,15 @@ class Index_EweiShopV2Page extends WebPage
 		foreach ($stock as $k => $v) {
 			if (!is_numeric($v)) $this->message('请填写正确的进货数量', webUrl('purchase/add'));
 		}
-		dump($stock);
-		die;
 		$data = [];
 		foreach ($good_id as $v) {
-			$data[] = ['good_id' => $v, 'number' => $stock[$v]];
+			$data[] = ['shop_id' => $shop_id, 'good_id' => $v, 'number' => $stock[$v]];
 		}
-//		if (!$res) $this->message('进货失败', webUrl('purchase/add'));
-//		$this->message('进货成功', webUrl('purchase'));
+		foreach ($data as $v) {
+			$res = pdo_insert('ewei_shop_purchase_order', $v);
+		}
+		if (!$res) $this->message('进货失败', webUrl('purchase/add'));
+		$this->message('进货成功', webUrl('purchase'));
 	}
 
 	public function del()

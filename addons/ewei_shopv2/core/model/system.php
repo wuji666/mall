@@ -1340,6 +1340,11 @@ class System_EweiShopV2Model
                             "desc" => "全部订单列表",
                             "permmust" => "order.list.main"
                         ),
+	                    array(
+		                    "title" => "内购订单",
+		                    "route" => "list.purchase",
+		                    "desc" => "内购订单列表",
+	                    ),
                         array(
                             "title" => "门店订单",
                             "route" => "list",
@@ -1535,7 +1540,8 @@ class System_EweiShopV2Model
                             "title" => "已关闭",
                             "route" => "list.status_1",
                             "desc" => "已关闭订单管理"
-                        ), array(
+                        ),
+	                    array(
                             "title" => "内购订单",
                             "route" => "list.purchase",
                             "desc" => "内购订单列表",

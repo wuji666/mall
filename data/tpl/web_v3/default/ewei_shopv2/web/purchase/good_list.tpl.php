@@ -217,6 +217,7 @@
 			$(this).click(function () {
 				if ($(this).is(':checked') === true) {
 					var val = $(this).val();
+					console.log($(this).parent());
 					$(this).parent().siblings().last().children().attr('name', 'stock[' + val +']');
 				}
 			})
